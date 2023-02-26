@@ -3,6 +3,7 @@ import Order.OrderClient;
 import User.User;
 import User.UserClient;
 import User.UserGeneration;
+import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
@@ -21,6 +22,7 @@ public class CreateOrderTests {
     private final OrderClient orderClient = new OrderClient();
     private final User randomUser = UserGeneration.createRandomUser();
     private final UserClient userClient = new UserClient();
+    private final Faker faker = new Faker();
     private String accessToken;
     private int actualStatusCode;
     private String actualMessage;
@@ -71,10 +73,7 @@ public class CreateOrderTests {
     @DisplayName("Создание заказа с неверным хешем ингредиентов")
     public void createOrderWithWrongHashTest() {
         ValidatableResponse userResponse = UserClient.createUser(randomUser);
-        List<String> ingredients = new ArrayList<>();
-        ingredients.add("jhdgkhjg547fjhg");
-        ingredients.add("7997stl;kilh99");
-        ingredients.add("");
+        List<String> ingredients = List.of(faker.random().hex(5), faker.random().hex(1),faker.random().hex(6));
         order = new Order(ingredients);
         ValidatableResponse response = orderClient.createOrder(order);
         actualStatusCode = response.extract().statusCode();

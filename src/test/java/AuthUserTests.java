@@ -2,6 +2,7 @@ import User.User;
 import User.UserClient;
 import User.UserCredentials;
 import User.UserGeneration;
+import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
@@ -15,6 +16,7 @@ public class AuthUserTests {
     private final UserClient userClient = new UserClient();
     private final User randomUser = UserGeneration.createRandomUser();
     private final UserCredentials userCredentials = new UserCredentials(randomUser.getEmail(), randomUser.getPassword(), randomUser.getName());
+    private final Faker faker = new Faker();
     private int actualStatusCode;
     private String accessToken;
 
@@ -31,7 +33,7 @@ public class AuthUserTests {
     @Test
     @DisplayName("Авторизация с некорректными логином и паролем")
     public void authWithWrongDataTest() {
-        UserCredentials userCredentials = new UserCredentials("Fsdfsdf@gmail.com", "3465634", "Pavel");
+        UserCredentials userCredentials = new UserCredentials(faker.internet().emailAddress(), faker.internet().password(1,5), faker.name().firstName());
         ValidatableResponse response = UserClient.authUser(userCredentials);
         actualStatusCode = response.extract().statusCode();
         Assert.assertEquals(actualStatusCode, SC_UNAUTHORIZED);
